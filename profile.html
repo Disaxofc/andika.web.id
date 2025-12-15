@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Andika AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
+    <script src="js/main.js"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { neon: '#00ff9c', darkbg: '#050505' }, fontFamily: { orbitron: ['Orbitron'], inter: ['Inter'] } } }
+        }
+    </script>
+    <style>
+        body { background: #050505; color: white; font-family: 'Inter', sans-serif; }
+        .card { background: rgba(20, 20, 20, 0.9); border: 1px solid #333; backdrop-filter: blur(10px); }
+        .input-box { width: 100%; background: #111; border: 1px solid #444; color: white; padding: 12px; outline: none; border-radius: 4px; font-family: 'Inter'; }
+        .input-box:focus { border-color: #00ff9c; }
+        .input-disabled { background: #1a1a1a; color: #666; cursor: not-allowed; border-color: #222; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+
+    <div class="card w-full max-w-md p-8 rounded-xl shadow-[0_0_40px_rgba(0,255,156,0.15)] border border-neon/50 relative overflow-hidden">
+        
+        <div class="absolute top-0 left-0 w-full h-1 bg-neon shadow-[0_0_10px_#00ff9c]"></div>
+
+        <h2 class="text-3xl font-orbitron font-bold text-center text-neon mb-2">USER PROFILE</h2>
+        <p class="text-center text-gray-500 text-xs mb-8">UPDATE YOUR IDENTITY</p>
+
+        <form onsubmit="event.preventDefault(); updateProfile()">
+            
+            <div class="mb-4">
+                <label class="block text-neon text-xs font-bold mb-1 ml-1">USERNAME</label>
+                <input type="text" id="p_username" class="input-box">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-500 text-xs font-bold mb-1 ml-1">EMAIL (LOCKED)</label>
+                <input type="text" id="p_email" class="input-box input-disabled" disabled>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-neon text-xs font-bold mb-1 ml-1">WHATSAPP</label>
+                <input type="text" id="p_phone" class="input-box">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-neon text-xs font-bold mb-1 ml-1">NEW PASSWORD (OPTIONAL)</label>
+                <input type="password" id="p_password" placeholder="Biarkan kosong jika tidak diganti" class="input-box">
+            </div>
+
+            <button type="submit" class="w-full bg-neon text-black font-orbitron font-bold py-3 rounded hover:bg-white hover:scale-[1.02] transition duration-200">
+                SAVE CHANGES
+            </button>
+
+            <button type="button" onclick="window.location.href='dashboard.html'" class="w-full mt-3 border border-gray-700 text-gray-400 font-orbitron text-sm py-3 rounded hover:border-neon hover:text-neon transition duration-200">
+                BACK TO DASHBOARD
+            </button>
+
+        </form>
+    </div>
+
+    <script>
+        // 1. Cek Login & Load Data saat halaman dibuka
+        const currentUser = checkSession(); // Fungsi dari js/main.js
+
+        document.getElementById('p_username').value = currentUser.username;
+        document.getElementById('p_email').value = currentUser.email;
+        document.getElementById('p_phone').value = currentUser.phone || "";
+
+        // 2. Fungsi Simpan Data
+        function updateProfile() {
+            const newUsername = document.getElementById('p_username').value;
+            const newPhone = document.getElementById('p_phone').value;
+            const newPass = document.getElementById('p_password').value;
+
+            // Ambil semua user dari LocalStorage
+            let users = getUsers(); // Fungsi dari js/main.js
+            
+            // Cari user yang sedang login di database
+            const userIndex = users.findIndex(u => u.email === currentUser.email);
+
+            if (userIndex !== -1) {
+                // Update Data
+                users[userIndex].username = newUsername;
+                users[userIndex].phone = newPhone;
+                
+                // Jika password diisi, ganti password
+                if (newPass) {
+                    users[userIndex].password = newPass;
+                }
+
+                // Simpan kembali ke LocalStorage (Database)
+                saveUsers(users);
+
+                // Simpan kembali ke Sesi Login (biar nama di dashboard berubah)
+                const updatedSession = users[userIndex];
+                localStorage.setItem(SESSION_KEY, JSON.stringify(updatedSession));
+
+                alert("✅ Profil Berhasil Diupdate!");
+                window.location.href = 'dashboard.html';
+            } else {
+                alert("❌ Error: User tidak ditemukan di database lokal.");
+            }
+        }
+    </script>
+</body>
+</html>

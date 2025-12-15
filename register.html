@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Andika AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <script src="js/main.js"></script>
+    <style>body{background:#050505;color:white;font-family:'Orbitron'}</style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="w-full max-w-sm p-8 border border-[#00ff9c] rounded-xl bg-black/90 shadow-[0_0_30px_rgba(0,255,156,0.1)]">
+        <h2 class="text-3xl text-[#00ff9c] text-center mb-6">JOIN US</h2>
+        <form onsubmit="event.preventDefault(); handleReg()">
+            <input type="text" id="user" placeholder="Username" class="w-full mb-3 p-3 bg-gray-900 border border-gray-700 text-white rounded outline-none focus:border-[#00ff9c]" required>
+            <input type="email" id="email" placeholder="Email" class="w-full mb-3 p-3 bg-gray-900 border border-gray-700 text-white rounded outline-none focus:border-[#00ff9c]" required>
+            <input type="text" id="phone" placeholder="WhatsApp" class="w-full mb-3 p-3 bg-gray-900 border border-gray-700 text-white rounded outline-none focus:border-[#00ff9c]">
+            <input type="password" id="pass" placeholder="Password" class="w-full mb-6 p-3 bg-gray-900 border border-gray-700 text-white rounded outline-none focus:border-[#00ff9c]" required>
+            <button class="w-full bg-[#00ff9c] text-black font-bold py-3 rounded hover:bg-white transition">DAFTAR</button>
+        </form>
+        <p class="mt-4 text-center text-xs text-gray-500">Sudah punya akun? <a href="login.html" class="text-[#00ff9c]">Login</a></p>
+    </div>
+    <script>
+        function handleReg() {
+            const res = register(
+                document.getElementById('user').value,
+                document.getElementById('email').value,
+                document.getElementById('pass').value,
+                document.getElementById('phone').value
+            );
+            if(res.ok) { alert('Berhasil!'); window.location.href = 'login.html'; }
+            else alert(res.msg);
+        }
+    </script>
+</body>
+</html>
