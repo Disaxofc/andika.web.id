@@ -6,8 +6,9 @@
     <title>Dashboard - Andika AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
-    <script src="js/main.js"></script>
     
+    <script src="js/main.js"></script>
+
     <script>
         tailwind.config = {
             theme: { extend: { colors: { neon: '#00ff9c', darkbg: '#050505' }, fontFamily: { orbitron: ['Orbitron'], inter: ['Inter'] } } }
@@ -17,47 +18,39 @@
     <style>
         body { background: #050505; color: white; font-family: 'Inter', sans-serif; }
         
-        /* STYLE CARD AGAR BISA ADA LOADING DI ATASNYA */
+        /* CARD STYLE & OVERLAY FIX */
         .card { 
             background: rgba(20, 20, 20, 0.6); 
             border: 1px solid #333; 
             backdrop-filter: blur(10px); 
             transition: 0.3s;
-            position: relative; /* WAJIB: Agar loading overlay terkunci di dalam card */
-            overflow: hidden;   /* WAJIB: Agar loading tidak bocor keluar */
+            position: relative; /* Wajib biar loading nempel di card */
+            overflow: hidden;   /* Wajib biar loading gak bocor */
         }
         .card:hover { border-color: #00ff9c; box-shadow: 0 0 15px rgba(0, 255, 156, 0.1); }
         
         .input-box { width: 100%; background: #111; border: 1px solid #444; color: white; padding: 12px; outline: none; border-radius: 4px; }
         .input-box:focus { border-color: #00ff9c; }
 
-        /* --- CSS LOADING OVERLAY KEREN (EDIT DI SINI) --- */
+        /* --- LOADING OVERLAY KEREN --- */
         .loading-overlay {
             position: absolute;
-            inset: 0; /* Menutupi seluruh card */
-            background: rgba(0, 0, 0, 0.95); /* Hitam pekat transparan */
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 50;
-            
-            /* Default sembunyi */
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
         }
 
-        /* Class untuk memunculkan loading */
-        .is-loading {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .is-loading { opacity: 1; pointer-events: auto; }
 
-        /* Animasi Spinner Neon */
         .cyber-spinner {
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             border: 3px solid rgba(0, 255, 156, 0.1);
             border-top: 3px solid #00ff9c;
             border-radius: 50%;
@@ -65,15 +58,10 @@
             box-shadow: 0 0 20px rgba(0, 255, 156, 0.4);
         }
 
-        /* Teks Loading */
         .loading-text {
-            margin-top: 15px;
-            font-family: 'Orbitron', sans-serif;
-            color: #00ff9c;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            animation: blink 1.5s infinite;
-            text-align: center;
+            margin-top: 15px; font-family: 'Orbitron', sans-serif;
+            color: #00ff9c; font-size: 0.8rem; letter-spacing: 1px;
+            animation: blink 1.5s infinite; text-align: center;
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -84,7 +72,8 @@
 
     <nav class="p-4 border-b border-gray-800 bg-black sticky top-0 z-50 flex justify-between items-center">
         <div class="font-orbitron font-bold text-neon text-xl">ANDIKA AI <span class="text-xs text-white px-2 py-0.5 border border-white rounded ml-2">PRO</span></div>
-        <div class="flex gap-4 text-sm">
+        <div class="flex gap-4 text-sm items-center">
+            <span id="welcomeUser" class="hidden md:inline text-gray-400">User</span>
             <a href="profile.html" class="hover:text-neon">Profile</a>
             <button onclick="logout()" class="text-red-500 hover:text-red-400">Logout</button>
         </div>
@@ -104,7 +93,7 @@
 
             <div id="loaderImage" class="loading-overlay">
                 <div class="cyber-spinner"></div>
-                <p class="loading-text">LOADING...<br>TUNGGU SEBENTAR</p>
+                <p class="loading-text">RENDERING IMAGE...<br>TUNGGU SEBENTAR</p>
             </div>
         </div>
 
@@ -125,7 +114,7 @@
 
             <div id="loaderCode" class="loading-overlay">
                 <div class="cyber-spinner"></div>
-                <p class="loading-text">SEDANG MENULIS KODE...<br>TUNGGU SEBENTAR</p>
+                <p class="loading-text">MENULIS KODE...<br>MOHON SABAR</p>
             </div>
         </div>
 
@@ -140,7 +129,7 @@
 
             <div id="loaderSchool" class="loading-overlay">
                 <div class="cyber-spinner"></div>
-                <p class="loading-text">MENCARI JAWABAN...<br>TUNGGU SEBENTAR</p>
+                <p class="loading-text">MENCARI JAWABAN...<br>SEDANG BERPIKIR</p>
             </div>
         </div>
 
@@ -155,10 +144,13 @@
     </div>
 
     <script>
-        // Cek Login
-        const user = checkSession(); // dari main.js
+        // 1. Cek Login (LocalStorage)
+        const user = checkAuth(); // Fungsi dari main.js
+        if(user) {
+            document.getElementById('welcomeUser').innerText = "Hi, " + user.username;
+        }
 
-        // 1. IMAGE GEN LOGIC
+        // 2. Logic Image Gen
         async function runImageGen() {
             const prompt = document.getElementById('imgPrompt').value;
             if(!prompt) return alert("Isi prompt dulu!");
@@ -167,25 +159,21 @@
             const canvas = document.getElementById('resultCanvas');
             const btn = document.getElementById('dlBtn');
 
-            // NYALAKAN LOADING
-            loader.classList.add('is-loading');
-            
+            loader.classList.add('is-loading'); // Show Loading
             canvas.style.display = 'none';
             btn.style.display = 'none';
 
             try {
-                // Fetch Gambar (Logic di main.js)
+                // Panggil fungsi AI dari main.js
                 const imgObj = await generateRealImage(prompt);
                 
                 canvas.style.display = 'block';
                 btn.style.display = 'block';
-                addWatermarkToCanvas(canvas, imgObj); // Logic di main.js
-                
+                addWatermarkToCanvas(canvas, imgObj); // Watermark logic di main.js
             } catch (err) {
-                alert("Gagal load gambar: " + err);
+                alert("Gagal: " + err);
             } finally {
-                // MATIKAN LOADING
-                loader.classList.remove('is-loading');
+                loader.classList.remove('is-loading'); // Hide Loading
             }
         }
 
@@ -196,7 +184,7 @@
             link.click();
         }
 
-        // 2. CODE GEN LOGIC
+        // 3. Logic Code Gen
         async function runCodeGen() {
             const lang = document.getElementById('codeLang').value;
             const prompt = document.getElementById('codePrompt').value;
@@ -205,25 +193,23 @@
             const loader = document.getElementById('loaderCode');
             const output = document.getElementById('codeResult');
             
-            // NYALAKAN LOADING
             loader.classList.add('is-loading');
             output.style.display = 'none';
 
-            const system = `Anda adalah Programmer Expert bahasa ${lang}. Berikan HANYA kode tanpa penjelasan panjang.`;
+            const system = `Anda adalah Programmer Expert bahasa ${lang}. Berikan HANYA kode.`;
             
             try {
-                const result = await generateRealText(prompt, system); // Logic di main.js
+                const result = await generateRealText(prompt, system);
                 output.value = result;
                 output.style.display = 'block';
             } catch (e) {
                 alert("AI Error");
             } finally {
-                // MATIKAN LOADING
                 loader.classList.remove('is-loading');
             }
         }
 
-        // 3. SCHOOL LOGIC
+        // 4. Logic School Helper
         async function runSchool() {
             const soal = document.getElementById('soalInput').value;
             if(!soal) return alert("Mana soalnya?");
@@ -231,25 +217,23 @@
             const loader = document.getElementById('loaderSchool');
             const output = document.getElementById('schoolResult');
 
-            // NYALAKAN LOADING
             loader.classList.add('is-loading');
             output.style.display = 'none';
 
-            const system = "Anda adalah Guru Sekolah yang bijak. Jawab pertanyaan siswa dengan jelas, singkat, dan tepat. Gunakan Bahasa Indonesia.";
+            const system = "Jawab pertanyaan siswa dengan jelas, singkat, dan tepat. Bahasa Indonesia.";
             
             try {
-                const result = await generateRealText(soal, system); // Logic di main.js
+                const result = await generateRealText(soal, system);
                 output.innerHTML = result.replace(/\n/g, '<br>');
                 output.style.display = 'block';
             } catch (e) {
                 alert("AI Error");
             } finally {
-                // MATIKAN LOADING
                 loader.classList.remove('is-loading');
             }
         }
 
-        // 4. VOICE LOGIC (Tidak butuh loading overlay karena instan)
+        // 5. Logic Voice
         function runVoice() {
             const text = document.getElementById('voiceText').value;
             if(!text) return;
@@ -260,8 +244,9 @@
             utterance.lang = 'id-ID';
             utterance.rate = 1;
             
+            // Watermark Audio
             utterance.onend = () => {
-                const wm = new SpeechSynthesisUtterance("Dibuat di Andika AI dot Web dot ID");
+                const wm = new SpeechSynthesisUtterance("Andika AI Platform");
                 wm.lang = 'id-ID';
                 window.speechSynthesis.speak(wm);
             };
