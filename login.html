@@ -1,30 +1,116 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Andika AI</title>
+    <title>Daftar Akun - Andika AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400&display=swap" rel="stylesheet">
+    
     <script src="js/main.js"></script>
-    <style>body{background:#050505;color:white;font-family:'Orbitron'}</style>
-</head>
-<body class="flex items-center justify-center min-h-screen p-4">
-    <div class="w-full max-w-sm p-8 border border-[#00ff9c] rounded-xl bg-black/90 shadow-[0_0_30px_rgba(0,255,156,0.1)]">
-        <h2 class="text-3xl text-[#00ff9c] text-center mb-6">ACCESS</h2>
-        <form onsubmit="event.preventDefault(); handleLogin()">
-            <input type="email" id="email" placeholder="Email" class="w-full mb-4 p-3 bg-gray-900 border border-gray-700 text-white rounded outline-none focus:border-[#00ff9c]" required>
-            <input type="password" id="pass" placeholder="Password" class="w-full mb-6 p-3 bg-gray-900 border border-gray-700 text-white rounded outline-none focus:border-[#00ff9c]" required>
-            <button class="w-full bg-[#00ff9c] text-black font-bold py-3 rounded hover:bg-white transition">MASUK</button>
-        </form>
-        <p class="mt-4 text-center text-xs text-gray-500">Belum ada akun? <a href="register.html" class="text-[#00ff9c]">Daftar</a></p>
-    </div>
+
     <script>
-        function handleLogin() {
-            const res = login(document.getElementById('email').value, document.getElementById('pass').value);
-            if(res.ok) window.location.href = 'dashboard.html';
-            else alert(res.msg);
+        tailwind.config = {
+            theme: { extend: { colors: { neon: '#00ff9c', darkbg: '#050505' }, fontFamily: { orbitron: ['Orbitron'], inter: ['Inter'] } } }
         }
     </script>
+    <style>
+        body { background: #050505; color: white; font-family: 'Orbitron', sans-serif; }
+        .glass-panel {
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 255, 156, 0.1);
+        }
+        .input-cyber {
+            width: 100%;
+            background: #111;
+            border: 1px solid #333;
+            color: #00ff9c;
+            padding: 12px;
+            outline: none;
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif;
+            transition: 0.3s;
+        }
+        .input-cyber:focus {
+            border-color: #00ff9c;
+            box-shadow: 0 0 10px rgba(0, 255, 156, 0.2);
+        }
+        .btn-cyber {
+            background: #00ff9c;
+            color: black;
+            font-weight: bold;
+            padding: 12px;
+            width: 100%;
+            border-radius: 4px;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-cyber:hover {
+            background: white;
+            box-shadow: 0 0 20px #00ff9c;
+        }
+        .btn-cyber:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+
+    <div class="glass-panel w-full max-w-sm p-8 rounded-xl relative overflow-hidden">
+        
+        <div class="absolute top-0 left-0 w-full h-1 bg-neon shadow-[0_0_15px_#00ff9c]"></div>
+
+        <h2 class="text-3xl text-center text-neon mb-2">JOIN US</h2>
+        <p class="text-center text-gray-500 text-xs mb-8 font-inter">BUAT AKUN BARU SEKARANG</p>
+
+        <form id="registerForm" class="space-y-4">
+            
+            <div>
+                <label class="block text-xs text-gray-500 mb-1 ml-1 font-inter">USERNAME</label>
+                <input type="text" id="user" placeholder="Nama Panggilan" class="input-cyber" required>
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-500 mb-1 ml-1 font-inter">EMAIL</label>
+                <input type="email" id="email" placeholder="contoh@email.com" class="input-cyber" required>
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-500 mb-1 ml-1 font-inter">WHATSAPP (OPSIONAL)</label>
+                <input type="number" id="phone" placeholder="08xxxxx" class="input-cyber">
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-500 mb-1 ml-1 font-inter">PASSWORD</label>
+                <input type="password" id="pass" placeholder="Rahasia..." class="input-cyber" required>
+            </div>
+
+            <button type="submit" class="btn-cyber mt-6">
+                DAFTAR SEKARANG
+            </button>
+        </form>
+
+        <p class="mt-6 text-center text-xs text-gray-500 font-inter">
+            Sudah punya akun? 
+            <a href="login.html" class="text-neon hover:underline hover:text-white transition">LOGIN DI SINI</a>
+        </p>
+    </div>
+
+    <script>
+        // Mencegah reload halaman biasa
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            // Panggil fungsi registerUser() yang ada di js/main.js
+            registerUser(); 
+        });
+    </script>
+
 </body>
 </html>
